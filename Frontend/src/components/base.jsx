@@ -2,44 +2,24 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link,Navigate } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 
-
-
 import GetMyClubs from "../getMyClubs";
 import Login from "../pages/login";
 import Tg from "./toggle";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 // import { marketplaceAddress } from "../config";
-import { UseAlchemy } from "./Hooks/Connection";
+
 import $, { error } from 'jquery'; 
 import { marketplaceAddress } from "../config";
 import {Web3} from 'web3';
-import { ethers } from "ethers";
 
-
-const web3 = new Web3(new Web3.providers.HttpProvider("https://sepolia-rpc.scroll.io/"));
+const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc.testnet.taraxa.io"));
 var contractPublic = null;
 
 
-async function ShowPrivateKey(){
-  var password = $('#passwordShowPV').val();
-  const my_wallet = await web3.eth.accounts.wallet.load(password);
-  const PrivateKey = my_wallet[0].privateKey;
 
-  try {
-    // var privateKey = CryptoJS.AES.decrypt(localStorage.getItem('aeWalletSecret'), password).toString(CryptoJS.enc.Utf8);
-    $('#privateKetShowed').text(PrivateKey);
-  }
-  catch(err) {
-    alert('The password is wrong. Please, enter the right password.')
-  }
-  $('#passwordShowPV').val('');
-  return false;
-}
 
 async function checkBalance() {
-  // console.log(localStorage.getItem("LL"));
-  
   
   try {
     const myWallet = localStorage.getItem("filWalletAddress");
@@ -60,24 +40,8 @@ async function checkBalance() {
     console.error("Error:", error);
   }
 }
-
-// async function ff(provider,accountAddress){
-//   const balance = await provider.request({
-//     method: "eth_getBalance",
-//     params: [accountAddress],
-//   });
-//   // console.log(web3.fromWei(balance))
-//   const balanceInEther = web3.utils.fromWei(balance, "ether");
-//   console.log(balanceInEther)
-// }
 function Base() {
-  const {ownerAddress,accountAddress,provider, handleLogin,userInfo} = UseAlchemy();
   const [password, setPassword] = useState('');
-
-  console.log("Provider",provider)
-  console.log("smartAccountAddress",accountAddress)
-  console.log("Account",ownerAddress)
-  // console.log("userInfo",userInfo.name);
   
   const navigate = useNavigate();
   function Logout(){
@@ -95,6 +59,7 @@ function Base() {
   useEffect(() => {
     {
       
+      
       if(localStorage.getItem('filWalletAddress') != null) {
         checkBalance();
         //checkCurrentBlock();
@@ -106,15 +71,13 @@ function Base() {
     }
   }, []);
   var isAuthenticated = localStorage.getItem('filWalletAddress');
-    // alert(isAuthenticated)
 
 
-  
 
   return (
-    <div  id="page-top">
+    <div id="page-top">
   {/* Page Wrapper */}
-  <div  id="wrapper">
+  <div id="wrapper">
     {/* Sidebar */}
     <ul
       className="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion"
@@ -128,7 +91,7 @@ function Base() {
         <div className="sidebar-brand-icon rotate-n-15">
           <i className="fas fa-laugh-wink" />
         </div>
-        <div className="sidebar-brand-text mx-3">SCROLL Club</div>
+        <div className="sidebar-brand-text mx-3"> TARA  Club </div>
       </a>
       {/* Divider */}
       <hr className="sidebar-divider my-0" />
@@ -182,7 +145,7 @@ function Base() {
                   <div className="row no-gutters align-items-center">
                     <div className="col mr-2">
                       <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                        Balance (ETH)
+                        Balance (TARA)
                       </div>
                       <div className="h5 mb-0 font-weight-bold text-gray-800 view_balance_address">
                         -
@@ -266,7 +229,7 @@ function Base() {
               <div className="card shadow mb-4">
                 <div className="card-header py-3">
                   <h6 className="m-0 font-weight-bold text-primary">
-                    My Smart Address
+                    My Address
                   </h6>
                 </div>
                 <div className="card-body">
@@ -277,17 +240,17 @@ function Base() {
                   </p>
                 </div>
               </div>
-             
+        
               <div className="card shadow mb-4">
                 <div className="card-header py-3">
                   <h6 className="m-0 font-weight-bold text-primary">
-                  SCROLL Club
+                  TARA  Club
                   </h6>
                 </div>
                 <div className="card-body">
                   <p>
-                  SCROLL Club is a light web wallet and Investment Club
-                    platform to manage funds (treasury) created upon on chain governance.
+                  TARA  Club is a light web wallet and Investment Club
+                    platform to manage funds.
                   </p>
                 </div>
               </div>

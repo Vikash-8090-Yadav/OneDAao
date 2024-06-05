@@ -3,11 +3,10 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { marketplaceAddress } from './config';
 import {Web3} from 'web3';
 import $ from 'jquery'; 
-
 import ABI from "./SmartContract/artifacts/contracts/InvestmentClub.sol/InvestmentClub.json"
 
 
-const web3 = new Web3(new Web3.providers.HttpProvider("https://sepolia-rpc.scroll.io/"));
+const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc.testnet.taraxa.io"));
 var contractPublic = null;
 
 async function getContract(userAddress) {
@@ -18,26 +17,19 @@ async function getContract(userAddress) {
     }
   }
 
-// window.ChangeProposal=(proposalId)=> {
-//     localStorage.setItem("proposalId",proposalId);
-//     console.log(localStorage.getItem("proposalId"))
-//   //   const history = useHistory();
-//   // history.push("/proposal");
-//   window.location.href = "proposal";
-//   }
-
-
-function ChangeProposal(proposalId){
-  localStorage.setItem("proposalId",proposalId);
-  console.log(localStorage.getItem("proposalId"))
-  window.location.href = "proposal";
-}
+window.changeProposal=(proposalId)=> {
+    localStorage.setItem("proposalId",proposalId);
+    console.log(localStorage.getItem("proposalId"))
+    window.location.href = "proposal";
+  }
 
 
   async function GetProposals() {
-
-
-   
+    function changeProposal(proposalId){
+      localStorage.setItem("proposalId",proposalId);
+      console.log(localStorage.getItem("proposalId"))
+      window.location.href = "proposal";
+    }
     var walletAddress = localStorage.getItem("filWalletAddress");
     await getContract(walletAddress);
     if(contractPublic != undefined) {
@@ -58,7 +50,7 @@ function ChangeProposal(proposalId){
           contractNameHeader.innerHTML = 'Description';
           theadTr.appendChild(contractNameHeader);
           var contractTickerHeader = document.createElement('th');
-          contractTickerHeader.innerHTML = 'Amount (Matic )';
+          contractTickerHeader.innerHTML = 'Amount ( TARA )';
           theadTr.appendChild(contractTickerHeader);
           
   
@@ -80,10 +72,10 @@ function ChangeProposal(proposalId){
           clubLink.className = 'btn btn-success';
           clubLink.textContent = valor.id;
           clubLink.addEventListener('click', function() {
-            ChangeProposal(valor.id);
+            changeProposal(valor.id);
           });
 
-          contractTd.innerHTML = "<div class='btn btn-success' onclick='ChangeProposal(" + valor.id + ")'>"+valor.id+"</div>";
+          contractTd.innerHTML = "<a class='btn btn-success' onclick='changeProposal(" + valor.id + ")'>"+valor.id+"</a>";
           tbodyTr.appendChild(clubLink);
           var contractTickerTd = document.createElement('td');
           contractTickerTd.innerHTML = '<b>' + valor.description + '</b>';

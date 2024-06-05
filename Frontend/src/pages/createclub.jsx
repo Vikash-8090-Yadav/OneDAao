@@ -1,38 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 
 import lighthouse from '@lighthouse-web3/sdk'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Tg from '../components/toggle';
-import {ethers} from 'ethers';
-
+import { notification } from 'antd';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { marketplaceAddress } from "../config";
 import {Web3} from 'web3';
 import $ from 'jquery'; 
-import { UseAlchemy } from '../components/Hooks/Connection';
-import { notification } from 'antd';
-
 import ABI from "../SmartContract/artifacts/contracts/InvestmentClub.sol/InvestmentClub.json"
-// const ethers = require("ethers")
-const web3 = new Web3(new Web3.providers.HttpProvider("https://sepolia-rpc.scroll.io/"));
+const ethers = require("ethers")
+const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc.testnet.taraxa.io"));
+
+
+
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+
 
 
 const apiKey = "207e0c12.0ca654f5c03a4be18a3185ea63c31f81"
 var contractPublic = null;
 
 
+const owneraddress = localStorage.getItem("filWalletAddress");
+
+
 function CreateClub() {
 
   
   
-  const {ownerAddress,accountAddress,provider, handleLogin,userInfo,loading} = UseAlchemy();
+ 
   const [clubName, setClubName] = useState('');
   const [password, setPassword] = useState('');
 
 
+  async function checkBalance() {
+  
+    try {
+      const myWallet = localStorage.getItem("filWalletAddress");
+      if (!myWallet) {
+        // Handle the case where the wallet address is not available in localStorage
+        return;
+      }
+      
+      // Assuming you've properly initialized the web3 instance before this point
+      const balanceWei = await web3.eth.getBalance(myWallet);
+      
+      // Convert Wei to Ether (assuming Ethereum)
+      const balanceEther = web3.utils.fromWei(balanceWei, "ether");
+      
+      // Update the balance on the page
+      $('.view_balance_address').text(balanceEther);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
 
   const register_job = async(cid1) =>{
     const formData = new FormData();
@@ -112,6 +137,8 @@ function CreateClub() {
           clubName,
 
         });
+
+
         const dealParams = {
           num_copies: 2,
           repair_threshold: 28800,
@@ -132,27 +159,34 @@ function CreateClub() {
       try
       {
         
-        $('.loading_message_creating').css("display","block");
-        console.log("The contractPublic is ",contractPublic)
-        // const query = contractPublic.methods.createClub(clubName,cid1);
- 
-        // const encodedABI = query.encodeABI();
-        // alert(this.contractPublic.options.address)
-       
-        try{
-          const abi = ABI.abi;
+          $('.loading_message_creating').css("display","block");
+          console.log("The contractPublic is ",contractPublic)
+          const query = contractPublic.methods.createClub(clubName,cid1);
+  
+          const encodedABI = query.encodeABI();
+          // alert(this.contractPublic.options.address)
+
+
+          // console.log(encodedABI);
+
+          console.log("The addrtess  is",owneraddress);
+
+        const abi = ABI.abi;
             const iface = new ethers.utils.Interface(abi);
             const encodedData = iface.encodeFunctionData("createClub", [clubName,cid1]);
             const GAS_MANAGER_POLICY_ID = "479c3127-fb07-4cc6-abce-d73a447d2c01";
 
 
-     
-              const signer = provider.getSigner();
+            await provider.send('eth_requestAccounts', []); // <- this promps user to connect metamask
+            const signer = provider.getSigner();
+             
 
               console.log("singer",signer);
               const tx = {
                 to: marketplaceAddress,
                 data: encodedData,
+                gasLimit: 10000000,
+      gasPrice: ethers.utils.parseUnits('0.001', 'gwei')
               };
               const txResponse = await signer.sendTransaction(tx);
               const txReceipt = await txResponse.wait();
@@ -161,56 +195,13 @@ function CreateClub() {
                 message: 'Transaction Successful',
                 description: (
                   <div>
-                    Transaction Hash: <a href={`https://sepolia.scrollscan.com/tx/${txReceipt.transactionHash}`} target="_blank" rel="noopener noreferrer">{txReceipt.transactionHash}</a>
+                   Transaction Hash: <a href={`https://testnet.explorer.taraxa.io/tx/${txReceipt.transactionHash}`} target="_blank" rel="noopener noreferrer">{txReceipt.transactionHash}</a>
                   </div>
                 )
               });
               console.log(txReceipt.transactionHash);
-             
- 
-        
-        //     provider.withAlchemyGasManager({
-        //       policyId: GAS_MANAGER_POLICY_ID, // replace with your policy id, get yours at https://dashboard.alchemy.com/
-        //       entryPoint: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
-        //     });
-        
-        // const result = await provider.sendUserOperation({
-        //         target: marketplaceAddress, // Replace with the desired target address
-        //         data: encodedData, // Replace with the desired call data
-        //       });
-        
-        //       const txHash = await provider.waitForUserOperationTransaction(
-        //         result.hash
-        //       );
-            
-        //       console.log("\nTransaction hash: ", txHash);
-            
-        //       const userOpReceipt = await provider.getUserOperationReceipt(
-        //         result.hash
-        //       );
-            
-        //       console.log("\nUser operation receipt: ", userOpReceipt);
-            
-        //       const txReceipt = await provider.rpcClient.waitForTransactionReceipt({
-        //         hash: txHash,
-        //       });
-            
-        //       console.log(txReceipt);
-        //       // console.log("txHash", receipt.transactionHash);
-        //       const polygonScanlink = `https://mumbai.polygonscan.com/tx/${txHash}`
-        //       toast.success(<a target="_blank" href={polygonScanlink}>Success Click to view transaction</a>, {
-        //         position: "top-right",
-        //         autoClose: 18000,
-        //         hideProgressBar: false,
-        //         closeOnClick: true,
-        //         pauseOnHover: true,
-        //         draggable: true,
-        //         progress: undefined,
-        //         theme: "dark",
-        //         });
-          }catch(error){
-            console.log(error)
-          }
+
+
    
         $('#club_name').val('');
         $('#errorCreateClub').css("display","none");
@@ -243,6 +234,18 @@ function CreateClub() {
   
   }
 
+  useEffect(() => {
+    {
+      
+      
+      if(localStorage.getItem('filWalletAddress') != null) {
+        checkBalance();
+
+        const myWallet = localStorage.getItem("filWalletAddress")
+        $('.current_account_text').text(myWallet);
+      }
+    }
+  }, []);
   
 
   return (
@@ -261,7 +264,7 @@ function CreateClub() {
         <div className="sidebar-brand-icon rotate-n-15">
           <i className="fas fa-laugh-wink" />
         </div>
-        <div className="sidebar-brand-text mx-3">SCROLL Club</div>
+        <div className="sidebar-brand-text mx-3">TARA Club</div>
       </a>
       {/* Divider */}
       <hr className="sidebar-divider my-0" />
@@ -317,7 +320,7 @@ function CreateClub() {
                   <div className="row no-gutters align-items-center">
                     <div className="col mr-2">
                       <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                        Balance (ETH)
+                        Balance (TARA)
                       </div>
                       <div className="h5 mb-0 font-weight-bold text-gray-800 view_balance_address">
                         -
@@ -404,7 +407,7 @@ function CreateClub() {
                         
                       />{" "}
                       <br />
-                      
+                      <br />
                       <br />
                       <br />
                       <input

@@ -1,5 +1,4 @@
 import React from 'react'
-import { useState } from 'react';
 import { BrowserRouter, Routes, Route,Navigate, Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import { marketplaceAddress } from "../config";
@@ -7,14 +6,13 @@ import {Web3} from 'web3';
 import $ from 'jquery'; 
 import ABI from "../SmartContract/artifacts/contracts/InvestmentClub.sol/InvestmentClub.json"
 
-const web3 = new Web3(new Web3.providers.HttpProvider("https://api.avax-test.network/ext/bc/C/rpc"));
+const web3 = new Web3(new Web3.providers.HttpProvider("https://node.botanixlabs.dev"));
 var contractPublic = null;
 
 
 
 
 function Register() {
-
     const navigate = useNavigate();
     async function generateWallet()
 {
@@ -30,8 +28,6 @@ function Register() {
   }
   $('.loadingNewWalletDiv').css('display', 'none');
 }
-
-
 
 
 function saveWallet() {
@@ -64,10 +60,10 @@ function saveWallet() {
         <div className="col-lg-7">
           <div className="p-5">
             <div className="text-center">
-              <h1 className="h4 text-gray-900 mb-4">Treasure Dao - Create an Account!</h1>
+              <h1 className="h4 text-gray-900 mb-4">Botanix CLUB - Create an Account!</h1>
             </div>
             <div className="text-center">
-            Treasure Dao is a light web wallet and platform that allows you to: 
+            Botanix  is a light web wallet and platform that allows you to: 
               <ul>
                 <li><b>Create investment clubs.</b></li> 
                 <li><b>Join and contribute to investment clubs.</b></li> 
@@ -90,7 +86,7 @@ function saveWallet() {
                   Private Key: <b><span id="filPrivateKey" /></b> <br />
                 </div>
                 <div className="col-sm-12 mb-6 mb-sm-0">
-                  Request some sepolia from the faucet: <a href="https://sepoliafaucet.com/" target="_blank" className="btn btn-success btn-user btn-block">Faucet</a>
+                  Request some BTC TESNET from the faucet: <a href="https://botanixlabs.xyz/en/testnet" target="_blank" className="btn btn-success btn-user btn-block">Faucet</a>
                 </div>
                 <div className="col-sm-12 mb-6 mb-sm-0">
                   Create a password for your wallet: 

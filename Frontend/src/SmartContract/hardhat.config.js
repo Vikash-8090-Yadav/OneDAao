@@ -1,6 +1,6 @@
 
 require ('@nomiclabs/hardhat-waffle');
-require('@nomiclabs/hardhat-etherscan');
+
 task("accounts","Prints the list of the accounts",async (taskArgs , hre )=>{
   const accounts = await hre.ethers.getSigners();
 
@@ -12,13 +12,13 @@ task("accounts","Prints the list of the accounts",async (taskArgs , hre )=>{
 module.exports = {
   solidity: "0.8.10",
 
-  ddefaultNetwork: "Kura",
+  defaultNetwork: "Testnet",
   networks:{
     hardhat:{},
-    Kura: {
-      url: "https://rpc-kura.cross.technology/" || "",
-      chainId: 5555,
-      accounts: ['4a781980d6c8b748ff8e76599d17dd997ebbd2fead313c30f303ac0251a9aa10']
-    },
-  },
+    Testnet: {
+      chainId: 842,
+      url: "https://rpc.testnet.taraxa.io",
+      accounts: ["5753e65f56865a161fbf41932a0d855139a4ce9dc20d82fb655bff393fc41702"],
+    }
+  }
 };

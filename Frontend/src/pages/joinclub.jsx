@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import {Web3} from 'web3';
 
 
-const web3 = new Web3(new Web3.providers.HttpProvider("https://sepolia-rpc.scroll.io/"));
+const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc.testnet.taraxa.io"));
 
 function JoinClub() {
   const navigate = useNavigate();
@@ -22,11 +22,37 @@ function JoinClub() {
 
     useEffect(() => {
         {
+          if(localStorage.getItem('filWalletAddress') != null) {
+            checkBalance();
+    
+            const myWallet = localStorage.getItem("filWalletAddress")
+            $('.current_account_text').text(myWallet);
+          }
             GetClubs(); 
         }
       }, []);
 
-
+      async function checkBalance() {
+  
+        try {
+          const myWallet = localStorage.getItem("filWalletAddress");
+          if (!myWallet) {
+            // Handle the case where the wallet address is not available in localStorage
+            return;
+          }
+          
+          // Assuming you've properly initialized the web3 instance before this point
+          const balanceWei = await web3.eth.getBalance(myWallet);
+          
+          // Convert Wei to Ether (assuming Ethereum)
+          const balanceEther = web3.utils.fromWei(balanceWei, "ether");
+          
+          // Update the balance on the page
+          $('.view_balance_address').text(balanceEther);
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      }
   return (
     <div id="page-top"> 
     {/* Page Wrapper */}
@@ -38,7 +64,7 @@ function JoinClub() {
           <div className="sidebar-brand-icon rotate-n-15">
             <i className="fas fa-laugh-wink" />
           </div>
-        <div className="sidebar-brand-text mx-3">SCROLL Club</div>
+        <div className="sidebar-brand-text mx-3">TARA Club</div>
         </a>
         {/* Divider */}
         <hr className="sidebar-divider my-0" />
@@ -75,7 +101,7 @@ function JoinClub() {
       {/* Main Content */}
       <div id="content">
         {/* Topbar */}
-       
+        
           {/* End of Topbar */}
           {/* Begin Page Content */}
           <div className="container-fluid">
@@ -92,7 +118,7 @@ function JoinClub() {
                     <div className="row no-gutters align-items-center">
                       <div className="col mr-2">
                         <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                          Balance (SCROLL)</div>
+                          Balance (TARA)</div>
                         <div className="h5 mb-0 font-weight-bold text-gray-800 view_balance_address">0</div>
                       </div>
                       <div className="col-auto">

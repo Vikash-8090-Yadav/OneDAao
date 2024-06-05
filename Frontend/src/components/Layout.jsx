@@ -1,29 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Outlet } from "react-router-dom";
 import Base from "./base";
 import { ToastContainer } from 'react-toastify';
-
-import { BiconomyProvider } from "./Hooks/Connection";
-import { UseAlchemy } from "./Hooks/Connection";
-
-
 import Nav from "./nav";
+
+
+
+
 const Layout = () => {
-  const {ownerAddress,accountAddress,provider, handleLogin,userInfo,loading,Logout} = UseAlchemy();
-
-
-  
-
-  
-  
   return (
-    
-    <div>
+    <div className="">
       <Nav/>
       <ToastContainer/>
       <Outlet />
-    </div>  
-    
+    </div>
   );
 };
 

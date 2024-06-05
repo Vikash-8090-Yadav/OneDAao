@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { marketplaceAddress } from "../config";
 import {Web3} from 'web3';
-
+import { notification } from 'antd';
 import ABI from "../SmartContract/artifacts/contracts/InvestmentClub.sol/InvestmentClub.json"
 
 
@@ -16,11 +16,13 @@ import axios from 'axios';
 import getProposalById from '../getProposalById';
 import GetClub from '../getclub';
 import Tg from "../components/toggle";
-import { UseAlchemy } from '../components/Hooks/Connection';
-import { notification } from 'antd';
+
 const ethers = require("ethers")
+
+
+const provider = new ethers.providers.Web3Provider(window.ethereum);
 const DataDaoAddress  = "0x8138489b863a68f224307a5D0Fa630917d848e25"
-const web3 = new Web3(new Web3.providers.HttpProvider("https://sepolia-rpc.scroll.io/"));
+const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc.testnet.taraxa.io"));
 
 var contractPublic = null;
 
@@ -39,7 +41,168 @@ async function getContract(userAddress) {
 
 
 
+async function runProposal(event) {
+  
+  var filWalletAddress = localStorage.getItem("filWalletAddress");
+  await getContract(filWalletAddress);
+  if(contractPublic != undefined) {
+    var option_execution = $('#option_execution').val()
+    var password = $('#passwordShowPVExecution').val();
+    if(option_execution == '') {
+      $('.errorExecution').css("display","block");
+      $('.errorExecution').text("Option is required");
+      return;
+    }
+    if(password == '') {
+      $('.errorExecution').css("display","block");
+      $('.errorExecution').text("Password is invalid");
+      return;
+    }
+    var clubId = localStorage.getItem("clubId");
+    var proposalId = localStorage.getItem("proposalId");
+    try {
+      const my_wallet = await web3.eth.accounts.wallet.load(password);
+    
+    if(my_wallet !== undefined)
+    {
+      
 
+      $('.errorExecution').css("display","none");
+      $('.successExecution').css("display","block");
+      $('.successExecution').text("Running...");
+      var clubId = localStorage.getItem("clubId");
+      var proposalId = localStorage.getItem("proposalId");
+      
+        try {
+          const ans  = await contractPublic.methods.isVotingOn(clubId,proposalId).call();
+
+          if(ans){
+            toast.error("Voting is still ON")
+            $('.successExecution').css("display","none");
+            $('.errorExecution').css("display","block");
+            $('.errorExecution').text("Voting is still ON");
+          }
+          
+          if(option_execution == 'execute') {
+            const query = await contractPublic.methods.executeProposal(clubId,proposalId);
+            const encodedABI = query.encodeABI();
+            
+            
+            try{
+              const abi = ABI.abi;
+                const iface = new ethers.utils.Interface(abi);
+                const encodedData = iface.encodeFunctionData("executeProposal", [clubId,proposalId]);
+                const GAS_MANAGER_POLICY_ID = "479c3127-fb07-4cc6-abce-d73a447d2c01";
+            
+                const signer = provider.getSigner();
+
+                console.log("singer",signer);
+                const tx = {
+                  to: marketplaceAddress,
+                  data: encodedData,
+                };
+                const txResponse = await signer.sendTransaction(tx);
+                const txReceipt = await txResponse.wait();
+  
+                notification.success({
+                  message: 'Transaction Successful',
+                  description: (
+                    <div>
+                      Transaction Hash: <a href={`https://testnet.explorer.taraxa.io/tx/${txReceipt.transactionHash}`} target="_blank" rel="noopener noreferrer">{txReceipt.transactionHash}</a>
+                    </div>
+                  )
+                });
+  
+                console.log(txReceipt.transactionHash);
+            
+                
+              }catch(error){
+                console.log(error)
+              }
+
+           
+          } else {
+            if(option_execution == 'close') {
+              const query = contractPublic.methods.closeProposal(clubId,proposalId);
+              const encodedABI = query.encodeABI();
+              const ans  = await contractPublic.methods.isVotingOn(clubId,proposalId).call();
+
+              if(ans){
+                toast.error("Voting is still ON")
+                $('.successExecution').css("display","none");
+            $('.errorExecution').css("display","block");
+            $('.errorExecution').text("Voting is still ON");
+            return;
+
+              }
+              
+            try{
+               
+                
+              const abi = ABI.abi;
+                const iface = new ethers.utils.Interface(abi);
+                const encodedData = iface.encodeFunctionData("closeProposal", [clubId,proposalId]);
+                const GAS_MANAGER_POLICY_ID = "479c3127-fb07-4cc6-abce-d73a447d2c01";
+            
+                const signer = provider.getSigner();
+
+            console.log("singer",signer);
+            const tx = {
+              to: marketplaceAddress,
+              data: encodedData,
+            };
+            const txResponse = await signer.sendTransaction(tx);
+            const txReceipt = await txResponse.wait();
+
+            notification.success({
+              message: 'Transaction Successful',
+              description: (
+                <div>
+                  Transaction Hash: <a href={`https://testnet.explorer.taraxa.io/tx/${txReceipt.transactionHash}`} target="_blank" rel="noopener noreferrer">{txReceipt.transactionHash}</a>
+                </div>
+              )
+            });
+
+            console.log(txReceipt.transactionHash);
+              }catch(error){
+                console.log(error)
+              }
+            }
+          }
+          
+        } catch (error) {
+          // alert(error)
+         
+          console.log(error)
+          $('.successExecution').css("display","none");
+          $('.errorExecution').css("display","block");
+          $('.errorExecution').text("Error executing/closing the proposal");
+          return;
+        }
+        
+        $('#option_execution').val('');
+        $('#passwordShowPVExecution').val('');
+        $('.errorExecution').css("display","none");
+        $('.successExecution').css("display","block");
+        $('.successExecution').text("The execution was successful ");
+      } else {
+        // alert(error)
+        toast.error(error)
+        $('.valid-feedback').css('display','none');
+          $('.invalid-feedback').css('display','block');
+          $('.invalid-feedback').text('The password is invalid');
+      }
+    }
+    catch {
+    
+      $('.valid-feedback').css('display','none');
+          $('.invalid-feedback').css('display','block');
+          $('.invalid-feedback').text('The password is invalid');
+    }
+    
+    
+  }
+}
 
 async function verify(){
   const clubId =  localStorage.getItem("clubId");
@@ -62,7 +225,110 @@ async function verify(){
         
 
 }
+async function voteOnProposal() {
 
+
+
+
+  var filWalletAddress = localStorage.getItem("filWalletAddress");
+  await getContract(filWalletAddress);
+  
+
+  var clubId = localStorage.getItem("clubId");
+  var proposalId = localStorage.getItem("proposalId");
+ 
+
+  if(contractPublic != undefined) {
+    var option_vote = $('#option_vote').val()
+    var password = $('#passwordShowPVVote').val();
+    if(option_vote == '') {
+      $('#errorCreateProposal').css("display","block");
+      $('#errorCreateProposal').text("Vote is required");
+      return;
+    }
+    if(password == '') {
+      $('#errorCreateProposal').css("display","block");
+      $('#errorCreateProposal').text("Password is invalid");
+      return;
+    }
+   
+    const my_wallet = await web3.eth.accounts.wallet.load(password);
+    if(my_wallet !== undefined)
+    {
+      $('.successVote').css("display","block");
+      
+      $('.successVote').text("Voting...");
+      
+      var optionBool = option_vote == '1' ? true : false;
+      try {
+        const ans  = await contractPublic.methods.isVotingOn(clubId,proposalId).call();
+
+        console.log("ans",ans)
+       
+        if(!ans){
+          $('.successVote').css("display","none");
+          $('.errorVote').css("display","block");
+          $('.errorVote').text("Voting time periods is over!");
+          toast.error("Voting time periods is over!");
+         
+          return;
+        }
+        
+        const query = contractPublic.methods.voteOnProposal(clubId,proposalId, optionBool);
+        const encodedABI = query.encodeABI();
+
+
+        
+
+        const abi = ABI.abi;
+              const iface = new ethers.utils.Interface(abi);
+              const encodedData = iface.encodeFunctionData("voteOnProposal", [clubId,proposalId, optionBool]);
+              const GAS_MANAGER_POLICY_ID = "479c3127-fb07-4cc6-abce-d73a447d2c01";
+          
+              const signer = provider.getSigner();
+
+              console.log("singer",signer);
+              const tx = {
+                to: marketplaceAddress,
+                data: encodedData,
+              };
+              const txResponse = await signer.sendTransaction(tx);
+              const txReceipt = await txResponse.wait();
+
+              notification.success({
+                message: 'Transaction Successful',
+                description: (
+                  <div>
+                    Transaction Hash: <a href={`https://testnet.explorer.taraxa.io/tx/${txReceipt.transactionHash}`} target="_blank" rel="noopener noreferrer">{txReceipt.transactionHash}</a>
+                  </div>
+                )
+              });
+              console.log(txReceipt.transactionHash);
+       
+      } catch (error) {
+        console.log(error.message);
+        
+      
+        $('.successVote').css("display","none");
+        $('.errorVote').css("display","block");
+        $('.errorVote').text("You already voted on this proposal");
+        return;
+      }
+      
+      $('#option_vote').val('');
+      $('#passwordShowPVVote').val('');
+      $('#errorVote').css("display","none");
+      $('#successVote').css("display","block");
+      $('#successVote').text("Your vote was successful ");
+      window.location.reload();
+    } else {
+      $('.valid-feedback').css('display','none');
+        $('.invalid-feedback').css('display','block');
+        $('.invalid-feedback').text('The password is invalid');
+    }
+    
+  }
+}
 
 
 async function verifyUserInClub() {
@@ -84,288 +350,6 @@ async function verifyUserInClub() {
 }
 
 function Proposal() {
-
-  const {ownerAddress,accountAddress,provider, handleLogin,userInfo,loading} = UseAlchemy();
-
-  async function runProposal(event) {
-  
-    var filWalletAddress = localStorage.getItem("filWalletAddress");
-    await getContract(filWalletAddress);
-    if(contractPublic != undefined) {
-      var option_execution = $('#option_execution').val()
-      var password = $('#passwordShowPVExecution').val();
-      if(option_execution == '') {
-        $('.errorExecution').css("display","block");
-        $('.errorExecution').text("Option is required");
-        return;
-      }
-      if(password == '') {
-        $('.errorExecution').css("display","block");
-        $('.errorExecution').text("Password is invalid");
-        return;
-      }
-      var clubId = localStorage.getItem("clubId");
-      var proposalId = localStorage.getItem("proposalId");
-      try {
-        const my_wallet = "123";
-      
-      if(my_wallet !== undefined)
-      {
-        
-  
-        $('.errorExecution').css("display","none");
-        $('.successExecution').css("display","block");
-        $('.successExecution').text("Running...");
-        var clubId = localStorage.getItem("clubId");
-        var proposalId = localStorage.getItem("proposalId");
-        
-          try {
-            var clubs = await contractPublic.methods.getProposalById(clubId, proposalId).call();
-            const amnt = web3.utils.toWei(clubs.amount.toString(), 'ether');
-            console.log(amnt)
-            // amountAE  = web3.utils.toWei(amountAE.toString(), 'ether');
-            const ans  = await contractPublic.methods.isVotingOn(clubId,proposalId).call();
-            // const ans1 = await contractPublic.methods.policyOK(clubId,proposalId).call();
-
-            // console.log(ans1);
-  
-            if(ans){
-              toast.error("Voting is still ON")
-              $('.successExecution').css("display","none");
-              $('.errorExecution').css("display","block");
-              $('.errorExecution').text("Voting is still ON");
-              return;
-              
-            }
-            
-            if(option_execution == 'execute') {
-              const query = await contractPublic.methods.executeProposal(clubId,proposalId);
-              const encodedABI = query.encodeABI();
-  
-              try{
-                const abi = ABI.abi;
-                  const iface = new ethers.utils.Interface(abi);
-                  const encodedData = iface.encodeFunctionData("executeProposal", [clubId,proposalId]);
-                  const GAS_MANAGER_POLICY_ID = "479c3127-fb07-4cc6-abce-d73a447d2c01";
-              
-                  const signer = provider.getSigner();
-
-                  console.log("singer",signer);
-                  const tx = {
-                    to: marketplaceAddress,
-                    data: encodedData,
-                  };
-                  const txResponse = await signer.sendTransaction(tx);
-                  const txReceipt = await txResponse.wait();
-    
-                  notification.success({
-                    message: 'Transaction Successful',
-                    description: (
-                      <div>
-                        Transaction Hash: <a href={`https://sepolia.scrollscan.com/tx/${txReceipt.transactionHash}`} target="_blank" rel="noopener noreferrer">{txReceipt.transactionHash}</a>
-                      </div>
-                    )
-                  });
-                  console.log(txReceipt.transactionHash);
-              
-                  
-                }catch(error){
-                  console.log(error)
-                }
-  
-  
-             
-            } else {
-              if(option_execution == 'close') {
-                // const query = contractPublic.methods.closeProposal(clubId,proposalId);
-                // const encodedABI = query.encodeABI();
-                const ans  = await contractPublic.methods.isVotingOn(clubId,proposalId).call();
-  
-              if(ans){
-                toast.error("Voting is still ON")
-                $('.successExecution').css("display","none");
-            $('.errorExecution').css("display","block");
-            $('.errorExecution').text("Voting is still ON");
-            return;
-
-              }
-              
-                
-              try{
-               
-                
-                const abi = ABI.abi;
-                  const iface = new ethers.utils.Interface(abi);
-                  const encodedData = iface.encodeFunctionData("closeProposal", [clubId,proposalId]);
-                  const GAS_MANAGER_POLICY_ID = "479c3127-fb07-4cc6-abce-d73a447d2c01";
-              
-                  const signer = provider.getSigner();
-
-              console.log("singer",signer);
-              const tx = {
-                to: marketplaceAddress,
-                data: encodedData,
-              };
-              const txResponse = await signer.sendTransaction(tx);
-              const txReceipt = await txResponse.wait();
-
-              notification.success({
-                message: 'Transaction Successful',
-                description: (
-                  <div>
-                    Transaction Hash: <a href={`https://sepolia.scrollscan.com/tx/${txReceipt.transactionHash}`} target="_blank" rel="noopener noreferrer">{txReceipt.transactionHash}</a>
-                  </div>
-                )
-              });
-              console.log(txReceipt.transactionHash);
-                }catch(error){
-                  console.log(error)
-                }
-              }
-            }
-            
-          } catch (error) {
-            // alert(error)
-            toast.error(error)
-            console.log(error)
-            $('.successExecution').css("display","none");
-            $('.errorExecution').css("display","block");
-            $('.errorExecution').text("Error executing/closing the proposal");
-            return;
-          }
-          
-          $('#option_execution').val('');
-          $('#passwordShowPVExecution').val('');
-          $('.errorExecution').css("display","none");
-          $('.successExecution').css("display","block");
-          $('.successExecution').text("The execution was successful ");
-        } else {
-          // alert(error)
-          toast.error(error)
-          $('.valid-feedback').css('display','none');
-            $('.invalid-feedback').css('display','block');
-            $('.invalid-feedback').text('The password is invalid');
-        }
-      }
-      catch {
-      
-        $('.valid-feedback').css('display','none');
-            $('.invalid-feedback').css('display','block');
-            $('.invalid-feedback').text('The password is invalid');
-      }
-      
-      
-    }
-  }
-
-
-
-
-  async function voteOnProposal() {
-    var filWalletAddress = localStorage.getItem("filWalletAddress");
-    await getContract(filWalletAddress);
-    
-  
-    var clubId = localStorage.getItem("clubId");
-    var proposalId = localStorage.getItem("proposalId");
-   
-  
-    if(contractPublic != undefined) {
-      var option_vote = $('#option_vote').val()
-     
-      if(option_vote == '') {
-        $('#errorCreateProposal').css("display","block");
-        $('#errorCreateProposal').text("Vote is required");
-        return;
-      }
-     
-     
-      const my_wallet = '123'
-      if(my_wallet !== undefined)
-      {
-        $('.successVote').css("display","block");
-        $('.successVote').text("Voting...");
-        var optionBool = option_vote == '1' ? true : false;
-        try {
-          const ans  = await contractPublic.methods.isVotingOn(clubId,proposalId).call();
-  
-          console.log("ans",ans)
-         
-          if(!ans){
-            toast.error("Voting time periods is over!");
-            $('.successVote').css("display","none");
-          $('.errorVote').css("display","block");
-          $('.errorVote').text("Voting time periods is over!");
-            return;
-          }
-
-          const chk  =  localStorage.getItem(accountAddress);
-
-               if(chk=="YES"){
-                toast.error("You already voted on this proposal");
-                $('.successVote').css("display","none");
-          $('.errorVote').css("display","block");
-          $('.errorVote').text("You already voted on this proposal");
-                return;
-               }
-          
-          const query = contractPublic.methods.voteOnProposal(clubId,proposalId, optionBool);
-          const encodedABI = query.encodeABI();
-       
-            const abi = ABI.abi;
-              const iface = new ethers.utils.Interface(abi);
-              const encodedData = iface.encodeFunctionData("voteOnProposal", [clubId,proposalId, optionBool]);
-              const GAS_MANAGER_POLICY_ID = "479c3127-fb07-4cc6-abce-d73a447d2c01";
-          
-              const signer = provider.getSigner();
-
-              console.log("singer",signer);
-              const tx = {
-                to: marketplaceAddress,
-                data: encodedData,
-              };
-              const txResponse = await signer.sendTransaction(tx);
-              const txReceipt = await txResponse.wait();
-
-              notification.success({
-                message: 'Transaction Successful',
-                description: (
-                  <div>
-                    Transaction Hash: <a href={`https://sepolia.scrollscan.com/tx/${txReceipt.transactionHash}`} target="_blank" rel="noopener noreferrer">{txReceipt.transactionHash}</a>
-                  </div>
-                )
-              });
-              console.log(txReceipt.transactionHash);
-                
-            
-         
-        } catch (error) {
-          console.log(error.message);
-          
-        
-          $('.successVote').css("display","none");
-          $('.errorVote').css("display","block");
-          $('.errorVote').text("You already voted on this proposal");
-          toast.error("You already voted on this proposal");
-          
-          return;
-        }
-        
-        $('#option_vote').val('');
-        $('#passwordShowPVVote').val('');
-        $('#errorVote').css("display","none");
-        $('#successVote').css("display","block");
-        $('#successVote').text("Your vote was successful ");
-        localStorage.setItem(accountAddress,"YES");
-        window.location.reload();
-      } else {
-        $('.valid-feedback').css('display','none');
-          $('.invalid-feedback').css('display','block');
-          $('.invalid-feedback').text('The password is invalid');
-      }
-      
-    }
-  }
 
   const navigate = useNavigate();
   function Logout(){
@@ -402,7 +386,7 @@ function Proposal() {
         <div className="sidebar-brand-icon rotate-n-15">
           <i className="fas fa-laugh-wink" />
         </div>
-        <div className="sidebar-brand-text mx-3">XDAI Club</div>
+        <div className="sidebar-brand-text mx-3">TARA Club</div>
       </a>
       {/* Divider */}
       <hr className="sidebar-divider my-0" />
@@ -414,7 +398,7 @@ function Proposal() {
         </a>
       </li>
       <li className="nav-item">
-        <Link  className=" nav-link" to="/joinclub">
+        <Link  className=" nav-link" to="joinclub">
           <i className="fas fa-fw fa-file-image-o" />
           <span>Available clubs</span>
           </Link>
@@ -439,7 +423,7 @@ function Proposal() {
       {/* Main Content */}
       <div id="content">
         {/* Topbar */}
-      
+        
         {/* End of Topbar */}
         {/* Begin Page Content */}
         <div className="container-fluid">
@@ -458,7 +442,7 @@ function Proposal() {
                   <div className="row no-gutters align-items-center">
                     <div className="col mr-2">
                       <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                        Club Balance (XDAI)
+                        Club Balance (TARA)
                       </div>
                       <div className="h5 mb-0 font-weight-bold text-gray-800 club_balance">
                         -
@@ -569,7 +553,7 @@ function Proposal() {
                         <span id="proposal_destination" />
                       </b>{" "}
                       <br />
-                      Amount (in XDAI):{" "}
+                      Amount (in TARA):{" "}
                       <b>
                         <span id="proposal_amount" />
                       </b>{" "}
@@ -629,7 +613,7 @@ function Proposal() {
                       <option value={0}>No</option>
                     </select>{" "}
                     <br />
-                   
+                    
                     <div 
                      onClick={() => {
                         voteOnProposal();

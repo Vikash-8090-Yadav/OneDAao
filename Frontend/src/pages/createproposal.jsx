@@ -10,19 +10,16 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import lighthouse from '@lighthouse-web3/sdk'
 import axios from 'axios';
-import {ethers} from 'ethers';
-import { UseAlchemy } from '../components/Hooks/Connection';
 import { notification } from 'antd';
-
-
-
-// import transferTokens from "../transfer-tokens";
-
-const web3 = new Web3(new Web3.providers.HttpProvider("https://sepolia-rpc.scroll.io/"));
+import GetClub from "../getclub";
+const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc.testnet.taraxa.io"));
 const apiKey = "207e0c12.0ca654f5c03a4be18a3185ea63c31f81"
 var contractPublic = null;
 var cid = null;
+const ethers = require("ethers")
 
+
+const provider = new ethers.providers.Web3Provider(window.ethereum);
 async function getContract(userAddress) {
   contractPublic =  new web3.eth.Contract(ABI.abi,marketplaceAddress);
   console.log(contractPublic)
@@ -32,10 +29,36 @@ async function getContract(userAddress) {
 }
 
 
+async function Registerjob(){
 
+  const formData = new FormData();
+  const requestReceivedTime = new Date()
+  
+  const endDate = requestReceivedTime.setMonth(requestReceivedTime.getMonth() + 1)
+  const replicationTarget = 2
+  const epochs = 4 // how many epochs before deal end should deal be renewed
+  formData.append('cid', cid)
+  formData.append('endDate', endDate)
+  formData.append('replicationTarget', replicationTarget)
+  formData.append('epochs', epochs)
 
+  const response = await axios.post(
+      `https://calibration.lighthouse.storage/api/register_job`,
+      formData
+  )
+  console.log(response.data)
+  toast.success('RAAS JOB Registered Sucessfully', {
+    position: "top-right",
+    autoClose: 15000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "dark",
+    });
+}
 function CreateProposal() {
-  const {ownerAddress,accountAddress,provider, handleLogin,userInfo,loading} = UseAlchemy();
 
 
   const [Password, setPassword] = useState('');
@@ -46,16 +69,7 @@ function CreateProposal() {
 
   
   async function createProposal() {
-    toast.info('Prposal Creation intiated ...', {
-      position: "top-right",
-      autoClose: 15000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "dark",
-      });
+    
     var walletAddress = localStorage.getItem("filWalletAddress");
     // alert(walletAddress) /// /////
     await getContract(walletAddress);
@@ -74,7 +88,7 @@ function CreateProposal() {
         $('#errorCreateProposal').text("Destination address is required");
         return;
       }
-      if(proposal_amount == '') {
+      if(proposal_amount == '' || proposal_amount <=0) {
         $('#errorCreateProposal').css("display","block");
         $('#errorCreateProposal').text("Amount is required");
         return;
@@ -86,6 +100,16 @@ function CreateProposal() {
       }
       var clubId = localStorage.getItem("clubId");
       const my_wallet = await web3.eth.accounts.wallet.load(password);
+      toast.info('Prposal Creation intiated ...', {
+        position: "top-right",
+        autoClose: 15000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        });
       if(my_wallet !== undefined)
       {
         $('.loading_message_creating').css("display","block");
@@ -116,43 +140,94 @@ function CreateProposal() {
         
         
 
-        // const query = contractPublic.methods.createProposal(clubId,proposal_amount, proposal_address, proposal_description,cid);
-        // const encodedABI = query.encodeABI();
-
-        
-        
-        $('.loading_message_creating').css("display","block");
-        console.log("The contractPublic is ",contractPublic)
-       
-        try{
-          const abi = ABI.abi;
-            const iface = new ethers.utils.Interface(abi);
-            const encodedData = iface.encodeFunctionData("createProposal", [clubId,proposal_amount, proposal_address, proposal_description,cid]);
-            const GAS_MANAGER_POLICY_ID = "479c3127-fb07-4cc6-abce-d73a447d2c01";
-        
-            const signer = provider.getSigner();
-
-              console.log("singer",signer);
-              const tx = {
-                to: marketplaceAddress,
-                data: encodedData,
-              };
-              const txResponse = await signer.sendTransaction(tx);
-              const txReceipt = await txResponse.wait();
-
-              
-
-              
-
-          }catch(error){
-            console.log(error)
-          }
+        const query = contractPublic.methods.createProposal(clubId,proposal_amount, proposal_address, proposal_description,cid);
+        const encodedABI = query.encodeABI();
+        // const account1s = web3.eth.accounts;
+            //  alert("Yes");
+            // console.log(account1s)
+            // const transactionObject = {
+            //   from: my_wallet[0].address,
+            //   gasPrice: '20000000000',
+            //   gas: '2000000',
+            //   to: this.contractPublic.options.address,
+            //   data: encodedABI,
+            //   // value: amountAE
+            // };
+            // var signedTx;
+            // try {
+            //    signedTx = await this.web3.eth.accounts.signTransaction(
+            //     transactionObject,
+            //     my_wallet[0].privateKey
+            //   );
+            //   console.log(signedTx);
+            // } catch (error) {
+            //   console.error(error);
+            // }
+            if (web3 && web3.eth) {
+              try {
+                const abi = ABI.abi;
+                const iface = new ethers.utils.Interface(abi);
+                const encodedData = iface.encodeFunctionData("createProposal", [clubId,proposal_amount, proposal_address, proposal_description,cid]);
+                const GAS_MANAGER_POLICY_ID = "479c3127-fb07-4cc6-abce-d73a447d2c01";
             
-       
+                const signer = provider.getSigner();
+    
+                  console.log("singer",signer);
+                  const tx = {
+                    to: marketplaceAddress,
+                    data: encodedData,
+                  };
+                  const txResponse = await signer.sendTransaction(tx);
+                  const txReceipt = await txResponse.wait();
+    
+                  notification.success({
+                    message: 'Transaction Successful',
+                    description: (
+                      <div>
+                        Transaction Hash: <a href={`https://testnet.explorer.taraxa.io/tx/${txReceipt.transactionHash}`} target="_blank" rel="noopener noreferrer">{txReceipt.transactionHash}</a>
+                      </div>
+                    )
+                  });
+                  console.log(txReceipt.transactionHash);
+              } catch (error) {
+                toast.error(error)
+                $('#errorCreateProposal').css("display","block");
+                $('#errorCreateProposal').text(error);
+                return;
+            
+              }
+            } else {
+              console.error('web3 instance is not properly initialized.');
+            }
+  
+  
   
   
   
         
+        // const signedTx = await this.account1s.signTransaction(
+        //   {
+        //     from: my_wallet[0].address,
+        //   gasPrice: "20000000000",
+        //   gas: "2000000",
+        //   to: this.contractPublic.options.address,
+        //   data: encodedABI,
+        //     // value: amountAE
+        //   },
+        //   my_wallet[0].privateKey,
+        //   false
+        // );
+        // // var clubId = await this.web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+        // if (web3 && web3.eth) {
+        //   try {
+        //     const clubId = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+        //     console.log('Transaction Receipt:', clubId);
+        //   } catch (error) {
+        //     console.error('Error sending signed transaction:', error);
+        //   }
+        // } else {
+        //   console.error('web3 instance is not properly initialized.');
+        // }
         $('#proposal_description').val('');
         $('#proposal_address').val('');
         $('#proposal_amount').val('');
@@ -161,7 +236,16 @@ function CreateProposal() {
         $('#errorCreateProposal').css("display","none");
         $('.loading_message_creating').css("display","none");
         $('#successCreateProposal').css("display","block");
-        
+        toast.success('Prposal Creation Sucessfull ...', {
+          position: "top-right",
+          autoClose: 15000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          });
         $('#successCreateProposal').text("Proposal created successfully with description: " + proposal_description);
       } else {
         $('.valid-feedback').css('display','none');
@@ -182,8 +266,14 @@ function CreateProposal() {
     navigate('/login');
   
   }
-  
 
+  
+  useEffect(() => {
+    {
+    
+        GetClub(); 
+    }
+  }, []);
 
   return (
     <div id="page-top">
@@ -202,7 +292,7 @@ function CreateProposal() {
         <div className="sidebar-brand-icon rotate-n-15">
           <i className="fas fa-laugh-wink" />
         </div>
-        <div className="sidebar-brand-text mx-3">SCROLL Club</div>
+        <div className="sidebar-brand-text mx-3">TARA Club</div>
       </a>
       {/* Divider */}
       <hr className="sidebar-divider my-0" />
@@ -255,7 +345,7 @@ function CreateProposal() {
                   <div className="row no-gutters align-items-center">
                     <div className="col mr-2">
                       <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                        Club Balance (ETH)
+                        Club Balance (TARA)
                       </div>
                       <div className="h5 mb-0 font-weight-bold text-gray-800 club_balance">
                         -
@@ -343,19 +433,17 @@ function CreateProposal() {
                         placeholder="Give a description for this proposal"
                       />{" "}
                       <br />
-
                       Destination address:{" "}
-                      
                       <input
                         type="text"
                         id="proposal_address"
                         className="form-control form-control-user"
                         value={destination}
 onChange={(e) => setDestination(e.target.value)}
-                        placeholder="Enter the ETH destination address: 0x....."
+                        placeholder="Enter the sepolia destination address: 0x....."
                       />{" "}
                       <br />
-                      Amount (in ETH):{" "}
+                      Amount (in TARA):{" "}
                       <input
                         type="number"
                         id="proposal_amount"
@@ -364,16 +452,14 @@ onChange={(e) => setDestination(e.target.value)}
                         onChange={(e) => setAmount(e.target.value)}
                         placeholder="Enter the amount"
                       />{" "}
-                      <br />
                       
                       <br />
                       <br />
                       <input
                         type="button"
                         id="createProposalButton"
-                        defaultValue="Create"
+                        defaultValue="Create and Upload to LightHouse"
                         onClick={() => {
-                         
                           createProposal();
                         }}
                         className="btn btn-primary btn-block"

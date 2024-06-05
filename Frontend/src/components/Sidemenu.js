@@ -3,41 +3,39 @@ import { Transition } from '@headlessui/react';
 import EthBadge from './EthBadge';
 import TokenBalance from './TokenBalance';
 import "./sidemenu.css";
-import { UseAlchemy } from './Hooks/Connection';
-import { Alchemy, Network } from "alchemy-sdk";
+
+
+
 import $, { error } from 'jquery'; 
-import Transak from '@biconomy/transak';
 
 import {Web3} from 'web3';
-const config = {
-  apiKey: "D5xSFqtTLJe_xdCJ24O4A8S6z2tafhCv",
-  network: "polygon-mumbai",
-};
-const alchemy = new Alchemy(config);
 
-const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc.chiadochain.net"));
+const accountAddress = localStorage.getItem("filWalletAddress");
+
+const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc.testnet.taraxa.io"));
 
 function SideMenu({ isOpen, setIsOpen, smartAccount, logout, address }) {
 
   const address1 = localStorage.getItem("filWalletAddress");
 
   function hndclck(){
-    window.open(`https://sepolia.scrollscan.com/address/${address1}`, '_blank');
+    window.open(`https://explorer.testnet.taraxa.io/address/${address1}`, '_blank');
   }
-  const {ownerAddress,accountAddress,provider, handleLogin,userInfo,loading} = UseAlchemy();
+
+  function testclk(){
+    window.open('https://testnet.explorer.taraxa.io/faucet', '_blank');
+  }
+
   const [value, setValue] = useState(0);
   const [value1, setValue1] = useState(0);
   const [balances, setBalances] = useState(null);
-  const smarbal = localStorage.getItem("smartbal");
+  var smarbal = localStorage.getItem("filWalletAddress");
 
-  const transak = new Transak('PRODUCTION', {
-    walletAddress: address,
-    userData: {
-      firstName: userInfo?.name || '',
-      email: userInfo?.email || '',
-    },
-  });
 
+  async function t(){
+
+    alert("This is t")
+  }
   async function checkBalance() {
     // console.log(localStorage.getItem("LL"));
     
@@ -55,9 +53,13 @@ function SideMenu({ isOpen, setIsOpen, smartAccount, logout, address }) {
       // Convert Wei to Ether (assuming Ethereum)
       const balanceEther = web3.utils.fromWei(balanceWei, "ether");
 
+
       setValue1(balanceEther)
+
+    
       
-      
+      smarbal = balanceEther;
+ 
       // Update the balance on the page
     } catch (error) {
       console.error("Error:", error);
@@ -70,48 +72,6 @@ function SideMenu({ isOpen, setIsOpen, smartAccount, logout, address }) {
     setIsOpen(false);
   }
 
-  const getBalances = async () => {
-    
-
-
-
-    console.log(accountAddress)
-    const address = smartAccount;
-
-  // Get token balances
-  const balances = await alchemy.core.getTokenBalances("0x05f8d732692f087aDB447CaA20d27021FaEEe820");
-
-  console.log(balances)
-  const aa = await alchemy.core.getTokenBalances("0x05f8d732692f087aDB447CaA20d27021FaEEe820")
-  console.log("HH",aa);
-
-  const nonZeroBalances = balances.tokenBalances.filter((token) => {
-    return token.tokenBalance !== "0";
-  });
-  console.log(nonZeroBalances)
-
-  console.log(`Token balances of ${address} \n`);
-
-  // Counter for SNo of final output
-  let i = 1;
-
-  // Loop through all tokens with non-zero balance
-  for (let token of nonZeroBalances) {
-    // Get balance of token
-    let balance = token.tokenBalance;
-
-    // Get metadata of token
-    const metadata = await alchemy.core.getTokenMetadata(token.contractAddress);
-
-    // Compute token balance in human-readable format
-    balance = balance / Math.pow(10, metadata.decimals);
-    
-
-
-    // Print name, balance, and symbol of token
-    console.log(`${i++}. ${metadata.name}: ${balance} ${metadata.symbol}`);
-  }
-  }
 
   useEffect(() => {
      checkBalance();
@@ -133,7 +93,7 @@ function SideMenu({ isOpen, setIsOpen, smartAccount, logout, address }) {
                   <div className=" mashiha divide-gray-900 bg-gray-900 text-white-900" >
                     <div className="px-4 mm  sm:px-6">
                       <div className="flex items-start justify-between">
-                        <h2 className="text-llg font-medium text-white">Smart Account</h2>
+                        <h2 className="text-llg font-medium text-white">TARA  Club</h2>
                         
                       </div>
                       
@@ -152,16 +112,16 @@ close
                       <div className='flex mml '>
                       <EthBadge className="text-white" address={accountAddress} />
                       <button  className="btn bg-blue-500  text-white  px-4 rounded-full" onClick={hndclck}>
-                       View on SCROLL Testnet explorer
+                       View on Tara explorer
                         
                       </button>
                       </div>
                       <div className="text-white text-2xl m-4">
-                      ${parseFloat(value).toFixed(2)}
+                      ${parseFloat(value1).toFixed(2)}
                       
                       </div>
-                      <button onClick={() => transak.init()} className="bg-blue-500 mb-3 text-white py-2 px-4 rounded-full w-full">
-                        Buy Crypto
+                      <button onClick={() => testclk()} className="bg-blue-500 mb-3 text-white py-2 px-4 rounded-full w-full">
+                        Get Faucet
                       </button>
                       <button onClick={() => handleLogout()} className="bg-blue-500 text-white py-2 px-4 rounded-full w-full">
                         Logout
@@ -169,9 +129,9 @@ close
 
                       <div class='flex mx-4 mt-3'>
   <div className=' d1 flex items-center bg-zinc-100 text-zinc-300 w-fit p-2 px-3 rounded-l-lg'>
-    <p className='d text-sm'>{'ETH'}</p>
+    <p className='d text-sm'>{'TARA'}</p>
     <p className= 'dd bg-zinc-800 p-1 px-3 ml-3 rounded-lg text-zinc-100'>
-      {parseFloat(smarbal).toFixed(4)}
+      {(value1)}
     </p>
   </div>
 </div>

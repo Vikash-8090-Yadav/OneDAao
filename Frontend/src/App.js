@@ -15,20 +15,14 @@ import Proposal from "./pages/proposal";
 import Register from "./pages/register";
 import Login from "./pages/login";
 // import
-import { BiconomyProvider } from "./components/Hooks/Connection";
-import { UseAlchemy } from "./components/Hooks/Connection";
 export const App = () =>{
-
     // Render the protected routes if authenticated
-  
-
     return (
-      <BiconomyProvider>
+
+
       <div>
         <Routes>
-
           <Route element={<Layout />}>
-         
           <Route index element={<Base />} />
             <Route path="/login" element={<Login/>} />
             <Route path="/register" element={<Register/>} />
@@ -40,9 +34,40 @@ export const App = () =>{
           </Route>
         </Routes>
       </div>
-      </BiconomyProvider>
+
     );
   
 }
 
+// export const App = () => {
+//   const [loading , setLoading] = useState()  
+//   var isAuthenticated = localStorage.getItem('filWalletAddress');
+//         if(isAuthenticated == null) {
+//             location.href = 'login.html';
+//         }
+        
+//   return (
+//     <div >  
+
+      
+  
+      
+//         <Routes>
+//         <Route element={<Layout />}>
+//         <Route index element={<Register />} />
+//         <Route path="/login" element={< Login/>} />
+//           <Route path="/joinclub" element={<JoinClub />} /> {/* Assuming JoinClub is the correct component */}
+//           <Route path="/createclub" element={<CreateClub />} />
+//           <Route path="/club" element={<Club />} />
+//           <Route path="/createproposal" element={<CreateProposal />} />
+//           <Route path="/Proposal" element={<Proposal />} />
+          
+
+//           </Route>  
+//         </Routes>
+      
+
+//     </div>
+//   );
+// };
 

@@ -9,7 +9,7 @@ import {Web3} from 'web3';
 import ABI from "./SmartContract/artifacts/contracts/InvestmentClub.sol/InvestmentClub.json"
 
 
-const web3 = new Web3(new Web3.providers.HttpProvider("https://sepolia-rpc.scroll.io/"));
+const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc.testnet.taraxa.io"));
 var contractPublic = null;
 
 var pieceCID = null;
@@ -39,6 +39,7 @@ var clubId = localStorage.getItem("clubId");
     var aeWalletAddress = localStorage.getItem("filWalletAddress");
     
     var clubs = await contractPublic.methods.getProposalById(clubId, proposalId).call();
+    console.log(clubs)
     if(clubs != undefined) {
 
       // console.log(clubs.Cid,clubs.PieceCid,clubs.carsize,clubs.posdiverification,clubs.storageProvider,clubs.DealId)
@@ -54,8 +55,10 @@ var clubId = localStorage.getItem("clubId");
       $('#votes_for').text(clubs.votesFor);
       $('#votes_against').text(clubs.votesAgainst);
       $('#CID').text(clubs.Cid);
-      
-      if(clubs.status == 'Pending' && clubs.creator == filWalletAddress) {
+   
+      var comp = clubs.creator.toLowerCase()
+      if(clubs.status == 'Pending' && comp == filWalletAddress) {
+
         $('.creator_options').css('display','block');
       }
       if(clubs.status != 'Pending') {
