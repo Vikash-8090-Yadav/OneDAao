@@ -9,15 +9,15 @@ import SideMenu from './Sidemenu';
 
 
 const networks = {
-    Tara: {
-    chainId: `0x${Number(842).toString(16)}`,
-    chainName: "Tara",
+  Kura: {
+    chainId: `0x${Number(5555).toString(16)}`,
+    chainName: "Kura",
     nativeCurrency: {
-      name: "Tara",
-      symbol: "Tara",
+      name: "Kura",
+      symbol: "Kura",
       decimals: 18,
     },
-    rpcUrls: ["https://rpc.testnet.taraxa.io"],
+    rpcUrls: ["https://rpc-kura.cross.technology/"],
   },
 };
 
@@ -45,7 +45,7 @@ function Nav() {
     
     const balanceWei= await web3.eth.getBalance(accountAddress)
             
-    const finalbalance = web3.utils.fromWei(balanceWei,"ether")+ " "+networks["Tara"]["nativeCurrency"]["name"];
+    const finalbalance = web3.utils.fromWei(balanceWei,"ether")+ " "+networks["Kura"]["nativeCurrency"]["name"];
     console.log("result->"+finalbalance);
     setBalance(finalbalance);
     
@@ -61,11 +61,11 @@ function Nav() {
   }
   let web3 =  new Web3(window.ethereum);
  
-  if(web3.network !=="Tara"){
+  if(web3.network !=="Kura"){
       await window.ethereum.request({
           method:"wallet_addEthereumChain",
           params:[{
-              ...networks["Tara"]
+              ...networks["Kura"]
           }]
       })
   }
@@ -112,7 +112,7 @@ function Nav() {
   href="/"
 >
   
-  <div className=" mmh text-lg mx-3">TARA  Club</div>
+  <div className=" mmh text-lg mx-3">One Dao</div>
 </a>
 </div>
   <button

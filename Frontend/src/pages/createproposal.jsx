@@ -292,7 +292,7 @@ function CreateProposal() {
         <div className="sidebar-brand-icon rotate-n-15">
           <i className="fas fa-laugh-wink" />
         </div>
-        <div className="sidebar-brand-text mx-3">TARA Club</div>
+        <div className="sidebar-brand-text mx-3">One Dao</div>
       </a>
       {/* Divider */}
       <hr className="sidebar-divider my-0" />
@@ -345,7 +345,7 @@ function CreateProposal() {
                   <div className="row no-gutters align-items-center">
                     <div className="col mr-2">
                       <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                        Club Balance (TARA)
+                        Club Balance (XCR)
                       </div>
                       <div className="h5 mb-0 font-weight-bold text-gray-800 club_balance">
                         -
@@ -443,7 +443,7 @@ onChange={(e) => setDestination(e.target.value)}
                         placeholder="Enter the sepolia destination address: 0x....."
                       />{" "}
                       <br />
-                      Amount (in TARA):{" "}
+                      Amount (in XCR):{" "}
                       <input
                         type="number"
                         id="proposal_amount"

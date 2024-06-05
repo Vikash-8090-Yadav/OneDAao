@@ -91,7 +91,7 @@ function Base() {
         <div className="sidebar-brand-icon rotate-n-15">
           <i className="fas fa-laugh-wink" />
         </div>
-        <div className="sidebar-brand-text mx-3"> TARA  Club </div>
+        <div className="sidebar-brand-text mx-3"> One Dao </div>
       </a>
       {/* Divider */}
       <hr className="sidebar-divider my-0" />
@@ -145,7 +145,7 @@ function Base() {
                   <div className="row no-gutters align-items-center">
                     <div className="col mr-2">
                       <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                        Balance (TARA)
+                        Balance (XCR)
                       </div>
                       <div className="h5 mb-0 font-weight-bold text-gray-800 view_balance_address">
                         -
@@ -244,12 +244,12 @@ function Base() {
               <div className="card shadow mb-4">
                 <div className="card-header py-3">
                   <h6 className="m-0 font-weight-bold text-primary">
-                  TARA  Club
+                  One Dao
                   </h6>
                 </div>
                 <div className="card-body">
                   <p>
-                  TARA  Club is a light web wallet and Investment Club
+                  One Dao is a light web wallet and Investment Club
                     platform to manage funds.
                   </p>
                 </div>
