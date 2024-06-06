@@ -1,7 +1,7 @@
 ![Screenshot from 2024-06-07 03-05-22](https://github.com/Vikash-8090-Yadav/Onedao/assets/85225156/cabc821f-600f-4793-a48b-3a75559637ba)
 
 
-## This dapp is live : 
+## This dapp is live :  https://onedao-five.vercel.app/
 
 # Smart contract  - 0x2F7E3F529562539bD9626384d1519Be8372fEade
 
@@ -104,7 +104,7 @@ The club smart contract has some restrictions, similar to real hedge funds:
     <tr>
       <td>Vercel</td>
       <td>
-         https://treasure-dao-kappa.vercel.app/
+         https://onedao-five.vercel.app/
       </td>
     </tr>
     </tr>
