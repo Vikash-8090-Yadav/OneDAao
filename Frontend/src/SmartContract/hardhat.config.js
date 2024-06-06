@@ -18,7 +18,7 @@ module.exports = {
     Testnet: {
       chainId: 5555,
       url: "https://rpc-kura.cross.technology/",
-      accounts: ["5753e65f56865a161fbf41932a0d855139a4ce9dc20d82fb655bff393fc41702"],
+      accounts: ["4a781980d6c8b748ff8e76599d17dd997ebbd2fead313c30f303ac0251a9aa10"],
     }
   }
 };
