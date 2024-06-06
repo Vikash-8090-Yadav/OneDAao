@@ -6,7 +6,7 @@ import $ from 'jquery';
 import ABI from "./SmartContract/artifacts/contracts/InvestmentClub.sol/InvestmentClub.json"
 
 
-const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc.testnet.taraxa.io"));
+const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc-kura.cross.technology/"));
 var contractPublic = null;
 
 async function getContract(userAddress) {
@@ -50,7 +50,7 @@ window.changeProposal=(proposalId)=> {
           contractNameHeader.innerHTML = 'Description';
           theadTr.appendChild(contractNameHeader);
           var contractTickerHeader = document.createElement('th');
-          contractTickerHeader.innerHTML = 'Amount ( TARA )';
+          contractTickerHeader.innerHTML = 'Amount ( XCR )';
           theadTr.appendChild(contractTickerHeader);
           
   

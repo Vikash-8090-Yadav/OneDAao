@@ -13,7 +13,7 @@ import {Web3} from 'web3';
 import $ from 'jquery'; 
 import ABI from "../SmartContract/artifacts/contracts/InvestmentClub.sol/InvestmentClub.json"
 const ethers = require("ethers")
-const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc.testnet.taraxa.io"));
+const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc-kura.cross.technology/"));
 
 
 
@@ -139,21 +139,9 @@ function CreateClub() {
         });
 
 
-        const dealParams = {
-          num_copies: 2,
-          repair_threshold: 28800,
-          renew_threshold: 240,
-          miner: ["t017840"],
-          network: 'calibration',
-          add_mock_data: 2
-        };
-
-        const response = await lighthouse.uploadText(data, apiKey, clubName)
-
-        console.log("The cid is ",response.data.Hash);
-
-        const cid1 = response.data.Hash;
+       
         // await register_job(cid1);
+        let cid1 = "Testig"
 
 
       try
@@ -161,7 +149,7 @@ function CreateClub() {
         
           $('.loading_message_creating').css("display","block");
           console.log("The contractPublic is ",contractPublic)
-          const query = contractPublic.methods.createClub(clubName,cid1);
+          const query = contractPublic.methods.createClub(clubName,"Testing");
   
           const encodedABI = query.encodeABI();
           // alert(this.contractPublic.options.address)
@@ -185,8 +173,7 @@ function CreateClub() {
               const tx = {
                 to: marketplaceAddress,
                 data: encodedData,
-                gasLimit: 10000000,
-      gasPrice: ethers.utils.parseUnits('0.001', 'gwei')
+          
               };
               const txResponse = await signer.sendTransaction(tx);
               const txReceipt = await txResponse.wait();
@@ -195,7 +182,7 @@ function CreateClub() {
                 message: 'Transaction Successful',
                 description: (
                   <div>
-                   Transaction Hash: <a href={`https://testnet.explorer.taraxa.io/tx/${txReceipt.transactionHash}`} target="_blank" rel="noopener noreferrer">{txReceipt.transactionHash}</a>
+                   Transaction Hash: <a href={`https://testnet.crossvaluescan.com/tx/${txReceipt.transactionHash}`} target="_blank" rel="noopener noreferrer">{txReceipt.transactionHash}</a>
                   </div>
                 )
               });

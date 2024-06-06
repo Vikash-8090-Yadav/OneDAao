@@ -12,7 +12,7 @@ import lighthouse from '@lighthouse-web3/sdk'
 import axios from 'axios';
 import { notification } from 'antd';
 import GetClub from "../getclub";
-const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc.testnet.taraxa.io"));
+const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc-kura.cross.technology/"));
 const apiKey = "207e0c12.0ca654f5c03a4be18a3185ea63c31f81"
 var contractPublic = null;
 var cid = null;
@@ -129,14 +129,9 @@ function CreateProposal() {
         });
 
 
-        const response = await lighthouse.uploadText(data, apiKey, proposal_description)
+        
 
-        console.log("The cid is ",response.data.Hash);
-        const cid11 = response.data.Hash;
-        var proposalId = localStorage.getItem("proposalId");
-        localStorage.setItem(proposalId-100,cid11);
-
-        cid = response.data.Hash;
+        cid ="Testing";
         
         
 
@@ -184,7 +179,7 @@ function CreateProposal() {
                     message: 'Transaction Successful',
                     description: (
                       <div>
-                        Transaction Hash: <a href={`https://testnet.explorer.taraxa.io/tx/${txReceipt.transactionHash}`} target="_blank" rel="noopener noreferrer">{txReceipt.transactionHash}</a>
+                        Transaction Hash: <a href={`https://testnet.crossvaluescan.com/tx/${txReceipt.transactionHash}`} target="_blank" rel="noopener noreferrer">{txReceipt.transactionHash}</a>
                       </div>
                     )
                   });

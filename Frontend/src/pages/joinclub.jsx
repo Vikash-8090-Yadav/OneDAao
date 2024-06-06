@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import {Web3} from 'web3';
 
 
-const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc.testnet.taraxa.io"));
+const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc-kura.cross.technology/"));
 
 function JoinClub() {
   const navigate = useNavigate();

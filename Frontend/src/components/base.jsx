@@ -13,7 +13,7 @@ import $, { error } from 'jquery';
 import { marketplaceAddress } from "../config";
 import {Web3} from 'web3';
 
-const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc.testnet.taraxa.io"));
+const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc-kura.cross.technology/"));
 var contractPublic = null;
 
 

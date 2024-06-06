@@ -12,18 +12,18 @@ import {Web3} from 'web3';
 
 const accountAddress = localStorage.getItem("filWalletAddress");
 
-const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc.testnet.taraxa.io"));
+const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc-kura.cross.technology/"));
 
 function SideMenu({ isOpen, setIsOpen, smartAccount, logout, address }) {
 
   const address1 = localStorage.getItem("filWalletAddress");
 
   function hndclck(){
-    window.open(`https://explorer.testnet.taraxa.io/address/${address1}`, '_blank');
+    window.open(`https://testnet.crossvaluescan.com/address/${address1}`, '_blank');
   }
 
   function testclk(){
-    window.open('https://testnet.explorer.taraxa.io/faucet', '_blank');
+    window.open('https://docs.crossvalue.io/testnet/claim-kura-testnet-xcr', '_blank');
   }
 
   const [value, setValue] = useState(0);
