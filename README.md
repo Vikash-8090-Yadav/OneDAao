@@ -138,7 +138,7 @@ npm install --legacy-peer-deps
 ```bash
 npm start
 ```
-Open your web browser and visit the URL SHOWING IN UR TERMINAL to interact with the Trasur Dao
+Open your web browser and visit the URL SHOWING IN UR TERMINAL to interact with the One Dao
 
 <br>
 
