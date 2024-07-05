@@ -60,7 +60,9 @@ async function Registerjob(){
 }
 function CreateProposal() {
 
+  var clubId = localStorage.getItem("clubId");
 
+  // alert(clubId)
   const [Password, setPassword] = useState('');
   const [description, setDescription] = useState('');
   const [title, setTitle] = useState('');
@@ -71,6 +73,8 @@ function CreateProposal() {
   async function createProposal() {
     
     var walletAddress = localStorage.getItem("filWalletAddress");
+
+    alert(walletAddress)
     // alert(walletAddress) /// /////
     await getContract(walletAddress);
 
@@ -114,7 +118,7 @@ function CreateProposal() {
         $('#errorCreateProposal').text("Password is invalid");
         return;
       }
-      var clubId = localStorage.getItem("clubId");
+      
       const my_wallet = await web3.eth.accounts.wallet.load(password);
       toast.info('Prposal Creation intiated ...', {
         position: "top-right",
