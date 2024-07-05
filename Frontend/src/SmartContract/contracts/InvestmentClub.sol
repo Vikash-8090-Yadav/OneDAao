@@ -14,6 +14,7 @@ library ClubLibrary {
         string CID;
         string posdiverification;
         uint256 DealId;
+        mapping(address => bool) contributions;
     }
 
     struct Member {
@@ -176,7 +177,21 @@ contract InvestmentClub {
         ClubLibrary.Member storage member = club.members[msg.sender];
         member.balance += uint256(msg.value);
         
+        ClubLibrary.Member memory newMember = ClubLibrary.Member({
+            memberAddress: msg.sender,
+            balance: 0
+        });
+        club.contributions[msg.sender] = true; 
+
+        
+        club.members[msg.sender] = newMember;
+        club.memberCounter += 1;
+        
         club.pool += uint256(msg.value);
+    }
+
+    function checkContri(uint256 clubId, address _address) view public returns (bool) {
+        return clubs[clubId].contributions[_address];
     }
     
     function createProposal(uint256 clubId, uint256 amount, address destination, string memory description,string memory Cid) public {
