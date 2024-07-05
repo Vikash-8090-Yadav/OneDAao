@@ -7,6 +7,8 @@ library ClubLibrary {
         mapping(address => Member) members;
         uint256 memberCounter;
         uint256 pool;
+        uint256 clubcreatedAt;
+        uint256 clubexpireAt;
         mapping(uint256 => Proposal) proposals;
         uint256 proposalCounter;
         string CID;
@@ -49,6 +51,8 @@ contract InvestmentClub {
         uint256 memberCount;
         uint256 proposalCount;
         uint256 pool;
+        uint256 clubcreatedAt;
+        uint256 clubexpireAt;
         string CID;
         string posdiverification;
         uint256 DealId;
@@ -120,6 +124,8 @@ contract InvestmentClub {
         club.pool = 0;
         club.proposalCounter = 0;
         club.memberCounter = 1;
+        club.clubcreatedAt = block.timestamp;
+        club.clubexpireAt = block.timestamp + 3 minutes;
         club.CID = Cid;
         club.posdiverification="Un-Verified";
         ClubLibrary.Member memory member = ClubLibrary.Member({
@@ -132,6 +138,11 @@ contract InvestmentClub {
         clubCounter = clubId;
         
         return clubId;
+    }
+
+    function isclubopen(uint256 clubId) view public returns(bool) {
+        ClubLibrary.Club storage club = clubs[clubId];
+       return club.clubexpireAt > block.timestamp;
     }
     
     function verifiydocs(uint256 clubId) public{
@@ -160,6 +171,7 @@ contract InvestmentClub {
         ClubLibrary.Club storage club = clubs[clubId];
         require(isMemberOfClub(msg.sender, clubId), "You are not a member of the club");
         require(msg.value > 0, "You must send EVMOS to contribute");
+        require(isclubopen(clubId), "Club is closed");
         
         ClubLibrary.Member storage member = club.members[msg.sender];
         member.balance += uint256(msg.value);
