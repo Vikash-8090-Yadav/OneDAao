@@ -1,4 +1,4 @@
-export const marketplaceAddress = "0x2F7E3F529562539bD9626384d1519Be8372fEade"
+export const marketplaceAddress = "0xe2F5834b59C7AA3d719Bb148E9662Cf60d920447"
 
 
 // 207e0c12.0ca654f5c03a4be18a3185ea63c31f81   API FOR UPLOAD TO LIGHTHOUSE
