@@ -98,7 +98,7 @@ contract InvestmentClub {
     function getClubById(uint256 clubId) public view returns (ClubInfo memory) {
         require(isClubIdExist(clubId), "the club does not exist");
         ClubLibrary.Club storage clubReal = clubs[clubId];
-        ClubInfo memory club = ClubInfo(clubReal.id, clubReal.name, clubReal.memberCounter, clubReal.proposalCounter, clubReal.pool,clubReal.CID,clubReal.posdiverification, clubReal.DealId);
+        ClubInfo memory club = ClubInfo(clubReal.id, clubReal.name, clubReal.memberCounter,clubReal.proposalCounter,clubReal.pool, clubReal.clubcreatedAt ,clubReal.clubexpireAt,clubReal.CID,clubReal.posdiverification, clubReal.DealId);
         return club;
     }
 
@@ -108,7 +108,7 @@ contract InvestmentClub {
         for (uint256 i = 1; i <= clubCounter; i++) {
             ClubLibrary.Club storage club = clubs[i];
             if (isMemberOfClub(msg.sender, club.id)) {
-                clubsInfo[index] = ClubInfo(club.id, club.name, club.memberCounter,club.proposalCounter, club.pool,club.CID,club.posdiverification,club.DealId);
+                clubsInfo[index] = ClubInfo(club.id, club.name, club.memberCounter,club.proposalCounter, club.pool,club.clubcreatedAt,club.clubexpireAt,club.CID,club.posdiverification,club.DealId);
                 index++;
             }
         }
@@ -348,7 +348,7 @@ contract InvestmentClub {
 
         for (uint256 i = 0; i < clubCounter; i++) {
             ClubLibrary.Club storage club = clubs[i+1];
-            clubList[i] = ClubInfo(club.id, club.name, club.memberCounter, club.proposalCounter, club.pool,club.CID,club.posdiverification,club.DealId);
+            clubList[i] = ClubInfo(club.id, club.name, club.memberCounter,club.clubcreatedAt ,club.clubexpireAt, club.proposalCounter, club.pool,club.CID,club.posdiverification,club.DealId);
         }
 
         return clubList;
