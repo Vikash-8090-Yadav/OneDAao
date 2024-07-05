@@ -73,6 +73,22 @@ function CreateProposal() {
     var walletAddress = localStorage.getItem("filWalletAddress");
     // alert(walletAddress) /// /////
     await getContract(walletAddress);
+
+
+    const ans  = await contractPublic.methods.checkContri(clubId,walletAddress).call();
+
+    if(!ans){
+      
+      notification.error({
+        message: 'Please contribute to the club first',
+        
+      });
+      
+     
+        return;
+}
+
+
     if(contractPublic != null) {
       var proposal_description = $('#proposal_description').val();
       var proposal_address = $('#proposal_address').val();
