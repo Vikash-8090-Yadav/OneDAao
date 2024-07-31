@@ -75,17 +75,17 @@ window.changeProposal=(proposalId)=> {
             changeProposal(valor.id);
           });
 
-          contractTd.innerHTML = "<a class='btn btn-success' onclick='changeProposal(" + valor.id + ")'>"+valor.id+"</a>";
+          contractTd.innerHTML = "<div class='btn btn-success' onclick='ChangeProposal(" + valor.clubId + ")'>"+valor.clubId+"</div>";
           tbodyTr.appendChild(clubLink);
           var contractTickerTd = document.createElement('td');
-          contractTickerTd.innerHTML = '<b>' + valor.description + '</b>';
+          contractTickerTd.innerHTML = '<b>' + valor.creator + '</b>';
           tbodyTr.appendChild(contractTickerTd);
           var balanceTd = document.createElement('td');
           // web3.utils.toWei(proposal_amount.toString(), 'ether');
-          balanceTd.innerHTML = '<b>' + web3.utils.fromWei(valor.amount.toString(),'ether')  + '</b>';
+          balanceTd.innerHTML = '<b>' + web3.utils.fromWei(valor.predictedPrice.toString(),'ether')  + '</b>';
           tbodyTr.appendChild(balanceTd);
           var balanceUSDTd2 = document.createElement('td');
-          balanceUSDTd2.innerHTML = '<b>' + valor.status+ '</b>';
+          balanceUSDTd2.innerHTML = '<b>' +new Date(Number(valor.proposalExpireAt ) * 1000).toLocaleString()+ '</b>';
           tbodyTr.appendChild(balanceUSDTd2);
          
           tbody.appendChild(tbodyTr);
