@@ -410,4 +410,8 @@ contract InvestmentClub {
         return (clubs[clubId].memberCounter < 99);
     }
 
+    function isClubFull2(uint256 clubId) public view returns (bool) {
+        return (clubs[clubId].memberCounter < 99);
+    }
+
 }
