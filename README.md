@@ -3,12 +3,25 @@
 
 ## This dapp is live :  https://onedao-five.vercel.app/
 
-# Smart contract  - 0x2F7E3F529562539bD9626384d1519Be8372fEade
+# Smart contract  - 0xd53Ed4b5Fd439183893F5DDd93a4C443e2e31bc0
 
-https://testnet.crossvaluescan.com/address/0x2F7E3F529562539bD9626384d1519Be8372fEade
+https://testnet.crossvaluescan.com/address/0xd53Ed4b5Fd439183893F5DDd93a4C443e2e31bc0
 
 
 ![Screenshot from 2024-06-07 03-06-30](https://github.com/Vikash-8090-Yadav/Onedao/assets/85225156/6fc1adb2-0d46-4b45-8072-adbb838a80e0)
+
+
+
+# Update in 5th Wave
+
+### Mandatory  to  contribute to the club before raising the proposal
+
+![Screenshot from 2024-07-06 01-30-26](https://github.com/Vikash-8090-Yadav/Onedao/assets/85225156/87160853-13b2-4e0c-9152-da7748314152)
+
+
+### Club will be opened for certain period of time
+
+![Screenshot from 2024-07-06 01-29-55](https://github.com/Vikash-8090-Yadav/Onedao/assets/85225156/447fa034-f437-4b95-bac3-83f52efba631)
 
 
 
